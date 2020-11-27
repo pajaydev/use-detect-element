@@ -1,0 +1,14 @@
+{
+  "name": "use-detect-element",
+  "version": "1.0.0",
+  "main": "index.js",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "scripts": {
+    "build": "babel index.js -o dist.js"
+  },
+  "author": "Ajaykumar Prathap",
+  "license": "MIT"
+}
