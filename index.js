@@ -1,10 +1,35 @@
 import React, {useEffect} from 'react';
 
+function throttle(func, delay){
+  let lastCalled = null; 
+  let timeout = null; 
+  return function(){
+    let context = this;
+    let args = arguments; 
+    const callFunc = () => {
+      func.apply(context, args);
+      timeout = null;
+    } 
+    if(!lastCalled){
+      lastCalled = true;
+      callFunc();
+    }
+    if(!timeout){
+      timeout = setTimeout(callFunc, delay);
+    }
+  }
+}
+
 function useDetectElement(){
     const ref = useRef(null);
     const [isEntered, setIsEntered] = useState(false);
     const [isExited, setIsExited] = useState(false);
-    const [isSeen, setIsSeen] = useState(false);
+    const [isInViewport, setIsInViewport] = useState(false);
+
+    // check the element is in view port.
+    const isNotSeen = (top, bottom) => {
+      return top > window.innerHeight || bottom < 0;
+    }
 
     const onScrollHandler = () => {
         let { top, bottom, height } = ref.current.getBoundingClientRect();
@@ -12,7 +37,7 @@ function useDetectElement(){
         const exited = bottom < height;
         //console.log(top, bottom, height);
         console.log(entered, exited, bottom <= window.innerHeight);
-        setInProgress(entered && !exited);
+        setIsInViewport(entered && !exited);
         setIsEntered(entered);
         setIsExited(exited);
     
@@ -25,7 +50,11 @@ function useDetectElement(){
         }
       };
 
+      const onResizeHandler = () => {
+        
+      }
 
+    const throttleHandler = throttle(onScrollHandler, 1000);
     useEffect(() => {
         if (!ref.current) return;
         console.log("calling use effect inside custom hook");
@@ -37,6 +66,8 @@ function useDetectElement(){
           window.removeEventListener("resize", onResizeHandler);
         };
       }, [ref]);
+
+      return [ref, isEntered, isExited, isInViewport];
 }
 
 export default useDetectElement;
